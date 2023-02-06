@@ -5,10 +5,10 @@
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
-## Downloading
+## Installation
 
 ```
-git clone {repository URL}
+git clone https://github.com/folent/nodejs2022Q4-service branch - develop
 ```
 
 ## Installing NPM modules
@@ -19,6 +19,7 @@ npm install
 
 ## Running application
 
+### Please add PORT to env file, before starting
 ```
 npm start
 ```
