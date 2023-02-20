@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UUIDVersion } from 'class-validator';
-import DB from 'src/db/db';
 import { Album } from 'src/album/Album.entity';
 import { UpdateAlbumDto } from './UpdateAlbum.dto';
 import { InjectRepository } from '@nestjs/typeorm';

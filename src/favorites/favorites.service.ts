@@ -1,11 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UUIDVersion } from 'class-validator';
-import DB from 'src/db/db';
-import { Favorites } from 'src/favorites/Favorites.entity';
-import { Repository } from 'typeorm';
 import { FavoritesResponse } from './FavoritesResponse.dto';
-import { Inject, forwardRef } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
 import { AlbumService } from 'src/album/album.service';
 import { TrackService } from 'src/track/track.service';
@@ -14,7 +8,6 @@ import { FavoriteAlbumRepository } from './Album/FavoriteAlbum.repository';
 import { FavoriteArtistRepository } from './Artist/FavoriteArtist.repository';
 import { FavoriteTrack } from './Track/FavoriteTrack.entity';
 import { FavoriteAlbum } from './Album/FavoriteAlbum.entity';
-import { Album } from 'src/album/Album.entity';
 import { FavoriteArtist } from './Artist/FavoriteArtist.entity';
 
 @Injectable()
@@ -34,28 +27,15 @@ export class FavoritesService {
       albums: [],
       artists: []
     }
-    const artists = await this.favoriteArtistRepository.getFavorites()
-    const albums = await this.favoriteAlbumRepository.getFavorites()
-    const tracks = await this.favoriteTracksRepository.getFavorites()
+    const artists = await this.favoriteArtistRepository.getFavorites();
+    const albums = await this.favoriteAlbumRepository.getFavorites();
+    const tracks = await this.favoriteTracksRepository.getFavorites();
     
-
     const artistsPromises = artists.map(
-      artist => this.artistService.getArtist(artist.id).then(res => {
-        if (res) {
-          return res
-        } else {
-          artist
-        }
-      })
+      artist => this.artistService.getArtist(artist.id)
     )
     const albumsPromises = albums.map(
-      album => this.albumService.getAlbum(album.id).then(res => {
-        if (res) {
-          return res
-        } else {
-          album
-        }
-      })
+      album => this.albumService.getAlbum(album.id)
     )
     const tracksPromises = tracks.map(
       track => this.trackService.getTrack(track.id)

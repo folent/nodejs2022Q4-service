@@ -13,6 +13,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "scan": "docker scan folent/nodejs2022q4-service-nest && docker scan folent/nodejs2022q4-service-postgres",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --config ./test/jest-e2e.json",
     "test:auth": "cross-env TEST_MODE=auth jest --config ./test/jest-e2e.json",

@@ -2,7 +2,9 @@ version: '3.8'
 services:
     db:
       container_name: postgres
-      image: postgres:latest
+      image: folent/nodejs2022q4-service-postgres
+      build:
+        context: ./src/db
       restart: on-failure
       environment:
         - POSTGRES_USER=${POSTGRES_USER}
@@ -18,14 +20,16 @@ services:
       - home
     backend:
       container_name: backend-nest
+      image: folent/nodejs2022q4-service-nest
       build: 
         context: ./
       depends_on:
         - db
       restart: on-failure
       ports:
-        - 4001:4001
+        - ${PORT}:${PORT}
       environment:
+        - POSTGRES_HOST=db
         - POSTGRES_PORT=${POSTGRES_PORT}
         - POSTGRES_USER=${POSTGRES_USER}
         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}

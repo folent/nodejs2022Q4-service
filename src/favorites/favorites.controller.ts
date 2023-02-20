@@ -23,7 +23,7 @@ export class FavoritesController {
   async getFavorites() {
     const favorites = await this.favoritesService.getFavorites();
     
-    return favorites
+    return favorites;
   }
 
   @Post('/track/:id')
