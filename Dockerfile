@@ -8,6 +8,6 @@ FROM node:18-alpine
 WORKDIR /app
 COPY --from=builder /app ./
 
-EXPOSE 4001
+EXPOSE ${PORT}
 CMD ["npm", "run", "start:prod"]
 
