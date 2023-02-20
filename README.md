@@ -4,12 +4,19 @@
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Docker - [Download & Install Docker](https://www.docker.com/products/docker-desktop/).
 
 ## Installation
 
 ```
-git clone https://github.com/folent/nodejs2022Q4-service branch - develop
+git clone https://github.com/folent/nodejs2022Q4-service 
 ```
+```
+git checkout feature/docker-typeorm
+```
+
+
+
 
 ## Installing NPM modules
 
@@ -17,9 +24,14 @@ git clone https://github.com/folent/nodejs2022Q4-service branch - develop
 npm install
 ```
 
+### Please rename example.env to .env file, before starting
+
 ## Running application
 
-### Please add PORT to env file, before starting
+docker-compose build
+
+docker-compose up
+
 ```
 npm start
 ```

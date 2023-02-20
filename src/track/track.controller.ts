@@ -1,19 +1,21 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Req, Res, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Req, Res, UseInterceptors } from '@nestjs/common';
 import { isUUID, UUIDVersion } from 'class-validator';
-import { TrackService } from '../services/track.service';
+import { TrackService } from './track.service';
 import { v4 } from 'uuid'
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { CreateTrackDto, TrackEntity } from 'src/entities/Track.entity';
-import { FavoritesService } from 'src/services/favorites.service';
+import { Track } from 'src/track/Track.entity';
+import { FavoritesService } from 'src/favorites/favorites.service';
 import { ApiBadRequestResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateTrackDto } from './CreateTrack.dto';
 
 @ApiTags('Track')
 @Controller('track')
 export class TrackController {
   constructor(
     private readonly trackService: TrackService,
-    private readonly favoritesService: FavoritesService) {}
+    private readonly favoritesService: FavoritesService
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all tracks' })
@@ -26,7 +28,7 @@ export class TrackController {
   @ApiOperation({ summary: 'Get single track by id' })
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiNotFoundResponse({ description: 'Track not found' })
-  async getTrack(@Param('id') id: UUIDVersion): Promise<TrackEntity> {
+  async getTrack(@Param('id', ParseUUIDPipe) id: string): Promise<Track> {
     if (!isUUID(id)) {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
@@ -43,10 +45,14 @@ export class TrackController {
   @ApiBadRequestResponse({ description: 'Validation errors' })
   @UseInterceptors(ClassSerializerInterceptor)
   async addTrack(@Body() body: CreateTrackDto) {
-    const newTrack: TrackEntity = {
-      id: v4(),
-      ...body,
-    }
+    const newTrack: Track = new Track();
+
+    newTrack.id = v4();
+    newTrack.name = body.name;
+    newTrack.duration = body.duration;
+    newTrack.albumId = body.albumId;
+    newTrack.artistId = body.artistId;
+
     const track = await this.trackService.addTrack(newTrack);
 
     return track
@@ -58,9 +64,9 @@ export class TrackController {
   @ApiNotFoundResponse({ description: 'Track not found' })
   @UseInterceptors(ClassSerializerInterceptor)
   async updateTrack(
-    @Param('id') id: UUIDVersion,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() body: CreateTrackDto
-    ): Promise<TrackEntity> {
+    ): Promise<Track> {
       
     if (!isUUID(id)) {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
@@ -83,7 +89,7 @@ export class TrackController {
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiNotFoundResponse({ description: 'Track not found' })
   async deleteTrack(
-    @Param('id') id: UUIDVersion,
+    @Param('id', ParseUUIDPipe) id: string,
     @Res() res: Response
   ){
     if (!isUUID(id)) {

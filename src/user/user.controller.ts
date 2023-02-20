@@ -1,11 +1,13 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Req, Res, UseInterceptors } from '@nestjs/common';
-import { isUUID, UUIDVersion } from 'class-validator';
-import { CreateUserDto, UpdatePasswordDto, UserEntity } from 'src/entities/User.entity';
-import { UserService } from '../services/user.service';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Req, Res, UseInterceptors } from '@nestjs/common';
+import { isUUID } from 'class-validator';
+import { User } from 'src/user/User.entity';
+import { UserService } from './user.service';
 import { v4 } from 'uuid'
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ApiBadRequestResponse, ApiForbiddenResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from './CreateUser.dto';
+import { UpdatePasswordDto } from './UpdatePassword.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -23,7 +25,7 @@ export class UserController {
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiNotFoundResponse({ description: 'User is not found' })
   @UseInterceptors(ClassSerializerInterceptor)
-  async getUser(@Param('id') id: UUIDVersion): Promise<CreateUserDto> {
+  async getUser(@Param('id', ParseUUIDPipe) id: string): Promise<CreateUserDto> {
     if (!isUUID(id)) {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
@@ -40,14 +42,14 @@ export class UserController {
   @ApiBadRequestResponse({ description: 'Validation error' })
   @UseInterceptors(ClassSerializerInterceptor)
   async addUser(@Req() req: Request) {
-    const newUser = new UserEntity({
+    const newUser = new User({
       ...req.body,
       id: v4(),
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date().valueOf(),
+      updatedAt: new Date().valueOf()
     })
     const user = await this.userService.addUser(newUser);
+    
 
     return user
   }
@@ -59,7 +61,7 @@ export class UserController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @UseInterceptors(ClassSerializerInterceptor)
   async updateUser(
-    @Param('id') id: UUIDVersion,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdatePasswordDto
     ): Promise<CreateUserDto> {
       
@@ -88,7 +90,7 @@ export class UserController {
   @ApiBadRequestResponse({ description: 'Validation errors' })
   @ApiNotFoundResponse({ description: 'User is not found' })
   async deleteUser(
-    @Param('id') id: UUIDVersion,
+    @Param('id', ParseUUIDPipe) id: string,
     @Res() res: Response
   ){
     if (!isUUID(id)) {

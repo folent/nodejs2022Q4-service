@@ -1,11 +1,11 @@
-import { Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Res } from '@nestjs/common';
 import { isUUID, UUIDVersion } from 'class-validator';
-import { ArtistService } from '../services/artist.service';
+import { ArtistService } from '../artist/artist.service';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { FavoritesService } from 'src/services/favorites.service';
-import { TrackService } from 'src/services/track.service';
-import { AlbumService } from 'src/services/album.service';
+import { FavoritesService } from 'src/favorites/favorites.service';
+import { TrackService } from 'src/track/track.service';
+import { AlbumService } from 'src/album/album.service';
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 
 @ApiTags('Favorites')
@@ -22,25 +22,8 @@ export class FavoritesController {
   @ApiOperation({ summary: 'Get favorites' })
   async getFavorites() {
     const favorites = await this.favoritesService.getFavorites();
-    const favoritesResponse = {
-      albums: [],
-      artists: [],
-      tracks: []
-    }
     
-
-    favoritesResponse.albums = favorites.albums.map(id => {
-        return this.albumService.getAlbum(id as UUIDVersion);
-    })
-    favoritesResponse.tracks = favorites.tracks.map(id => {
-      return this.trackService.getTrack(id as UUIDVersion);
-    })
-    favoritesResponse.artists = favorites.artists.map(id => {
-      return this.artistService.getArtist(id as UUIDVersion);
-    })
-    
-
-    return favoritesResponse
+    return favorites;
   }
 
   @Post('/track/:id')
@@ -49,7 +32,7 @@ export class FavoritesController {
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiUnprocessableEntityResponse({ description: 'Track is not found' })
   @HttpCode(HttpStatus.CREATED)
-  async addTrack(@Param('id') id: UUIDVersion) {
+  async addTrack(@Param('id', ParseUUIDPipe) id: string) {
     if (!isUUID(id)) {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
@@ -77,7 +60,7 @@ export class FavoritesController {
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiNotFoundResponse({ description: 'Track is not in favorites' })
   async deleteTrack(
-    @Param('id') id: UUIDVersion,
+    @Param('id', ParseUUIDPipe) id: string,
     @Res() res: Response
   ){
     if (!isUUID(id)) {
@@ -98,7 +81,7 @@ export class FavoritesController {
   @ApiCreatedResponse({ description: 'Album added to favorites' })
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiUnprocessableEntityResponse({ description: 'Album not found' })
-  async addAlbum(@Param('id') id: UUIDVersion) {
+  async addAlbum(@Param('id', ParseUUIDPipe) id: string) {
     if (!isUUID(id)) {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
@@ -126,7 +109,7 @@ export class FavoritesController {
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiNotFoundResponse({ description: 'Album is not in favorites' })
   async deleteAlbum(
-    @Param('id') id: UUIDVersion,
+    @Param('id', ParseUUIDPipe) id: string,
     @Res() res: Response
   ){
     if (!isUUID(id)) {
@@ -149,7 +132,7 @@ export class FavoritesController {
   @ApiCreatedResponse({ description: 'Artist added to favorites' })
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiUnprocessableEntityResponse({ description: 'Artist not found' })
-  async addArtist(@Param('id') id: UUIDVersion) {
+  async addArtist(@Param('id', ParseUUIDPipe) id: string) {
     if (!isUUID(id)) {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
@@ -177,7 +160,7 @@ export class FavoritesController {
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiNotFoundResponse({ description: 'Artist is not in favorites' })
   async deleteArtist(
-    @Param('id') id: UUIDVersion,
+    @Param('id', ParseUUIDPipe) id: string,
     @Res() res: Response
   ){
     if (!isUUID(id)) {
