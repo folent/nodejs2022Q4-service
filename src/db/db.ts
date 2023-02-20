@@ -1,25 +1,25 @@
-import { AlbumEntity } from "src/entities/Album.entity";
-import { ArtistEntity } from "src/entities/Artist.entity";
-import { FavoritesEntity } from "src/entities/Favorites.entity";
-import { TrackEntity } from "src/entities/Track.entity";
-import { UserEntity } from "src/entities/User.entity";
+import { Album } from "src/album/Album.entity";
+import { Artist } from "src/artist/Artist.entity";
+import { Favorites } from "src/favorites/Favorites.entity";
+import { Track } from "src/track/Track.entity";
+import { User } from "src/user/User.entity";
 
 class DB {
-    users: UserEntity[]
-    albums: AlbumEntity[]
-    artists: ArtistEntity[]
-    favorites: FavoritesEntity
-    tracks: TrackEntity[]
+    users: User[]
+    albums: Album[]
+    artists: Artist[]
+    favorites: Favorites
+    tracks: Track[]
     constructor() {
         this.users = [];
         this.albums = [];
         this.artists = [];
         this.tracks = [];
-        this.favorites = {
-            artists: [],
-            albums: [],
-            tracks: [],
-        }
+        // this.favorites = {
+        //     artists: [],
+        //     albums: [],
+        //     tracks: [],
+        // }
     }
 }
 

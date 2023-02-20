@@ -1,20 +1,29 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AlbumModule } from './album/album.module';
+import { AlbumService } from './album/album.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AlbumController } from './controllers/album.controller';
-import { ArtistController } from './controllers/artist.controller';
-import { FavoritesController } from './controllers/favorites.controller';
-import { TrackController } from './controllers/track.controller';
-import { UserController } from './controllers/user.controller';
-import { AlbumService } from './services/album.service';
-import { ArtistService } from './services/artist.service';
-import { FavoritesService } from './services/favorites.service';
-import { TrackService } from './services/track.service';
-import { UserService } from './services/user.service';
+import { ArtistController } from './artist/artist.controller';
+import { ArtistModule } from './artist/artist.module';
+import { ArtistService } from './artist/artist.service';
+import { DatabaseModule } from './database.module';
+import { FavoritesModule } from './favorites/favorites.module';
+import { TrackModule } from './track/track.module';
+import { TrackService } from './track/track.service';
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController, UserController, TrackController, ArtistController, AlbumController, FavoritesController],
-  providers: [AppService, UserService, TrackService, ArtistService, AlbumService, FavoritesService],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '../.env' }),
+    DatabaseModule,
+    UserModule,
+    TrackModule,
+    AlbumModule,
+    ArtistModule,
+    FavoritesModule
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
