@@ -1,5 +1,5 @@
-import { Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Res } from '@nestjs/common';
-import { isUUID, UUIDVersion } from 'class-validator';
+import { Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Res, UseGuards } from '@nestjs/common';
+import { isUUID } from 'class-validator';
 import { ArtistService } from '../artist/artist.service';
 import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -7,8 +7,10 @@ import { FavoritesService } from 'src/favorites/favorites.service';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-guard';
 
 @ApiTags('Favorites')
+@UseGuards(JwtAuthGuard)
 @Controller('favs')
 export class FavoritesController {
   constructor(
@@ -37,7 +39,8 @@ export class FavoritesController {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
 
-    const track = this.trackService.getTrack(id);
+    const track = await this.trackService.getTrack(id);
+    
     if (!track) {
       throw new HttpException('track doesn`t exists', HttpStatus.UNPROCESSABLE_ENTITY)
     }
@@ -86,7 +89,7 @@ export class FavoritesController {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
 
-    const album = this.albumService.getAlbum(id);
+    const album = await this.albumService.getAlbum(id);
     if (!album) {
       throw new HttpException('Album doesn`t exists', HttpStatus.UNPROCESSABLE_ENTITY)
     }
@@ -97,7 +100,7 @@ export class FavoritesController {
       throw new HttpException('Error', HttpStatus.UNPROCESSABLE_ENTITY)
     }
 
-    await this.favoritesService.addAlbum(id);
+    await this.favoritesService.addAlbum(album);
 
     return id
   }
@@ -137,7 +140,7 @@ export class FavoritesController {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
 
-    const track = this.artistService.getArtist(id);
+    const track = await this.artistService.getArtist(id);
     if (!track) {
       throw new HttpException('Artist doesn`t exists', HttpStatus.UNPROCESSABLE_ENTITY)
     }

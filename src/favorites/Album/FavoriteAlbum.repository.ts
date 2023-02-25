@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Album } from 'src/album/Album.entity';
 import { Repository } from 'typeorm';
 import { FavoriteAlbum } from './FavoriteAlbum.entity';
 
@@ -18,7 +19,7 @@ export class FavoriteAlbumRepository {
 
     return this.favoriteAlbumRepository.findOne({ 
     where: {
-        id
+        albumId: id
       } 
     })
   }
@@ -27,8 +28,10 @@ export class FavoriteAlbumRepository {
     await this.favoriteAlbumRepository.insert(favoriteAlbum)
   }
 
-  async delete(favoriteAlbum: FavoriteAlbum): Promise<void> {
+  async delete(id: string): Promise<void> {
 
-    await this.favoriteAlbumRepository.delete(favoriteAlbum.id)
+    await this.favoriteAlbumRepository.delete({
+      albumId: id
+    })
   }
 }
