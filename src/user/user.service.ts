@@ -21,14 +21,25 @@ export class UserService {
   async getUser(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: {
-        id: id
+        id
       }
     })
+    
     return user;
   }
-  async addUser(user: User): Promise<CreateUserDto> {
-    const newUser = await this.userRepository.create({ ...user });
-    await this.userRepository.save(newUser);
+
+  async getUserByLogin(login: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        login
+      }
+    })
+    
+    return user;
+  }
+  async addUser(user: CreateUserDto): Promise<User> {
+    await this.userRepository.insert(user);
+    const newUser = await this.userRepository.findOne({ where: { login: user.login } });
 
     return newUser;
   }
@@ -40,10 +51,6 @@ export class UserService {
       version: () => 'version + 1',
       updatedAt: Date.now()
     })
-    // const userIndex = DB.users.findIndex(u => u.id === id);
-    // DB.users[userIndex].password = data.newPassword;
-    // DB.users[userIndex].version = DB.users[userIndex].version + 1;
-    // DB.users[userIndex].updatedAt = Date.now()
 
     return await this.userRepository.findOneOrFail({
       where: {
@@ -53,11 +60,15 @@ export class UserService {
   }
 
   async deleteUser(id: string): Promise<Boolean> {
-    // DB.users = DB.users.filter(u => u.id !== id);
     await this.userRepository.delete({
       id: id
     })
     
     return Promise.resolve(true)
+  }
+  async updateRefreshToken(id: string, refreshToken: string) {
+    await this.userRepository.update(id, {
+      refreshToken
+    })
   }
 }

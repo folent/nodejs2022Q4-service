@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { isUUID, UUIDVersion } from 'class-validator';
 import { ArtistService } from './artist.service';
 import { v4 } from 'uuid'
@@ -9,8 +9,10 @@ import { FavoritesService } from 'src/favorites/favorites.service';
 import { ApiBadRequestResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateArtistDto } from './CreateArtist.dto';
 import { UpdateArtistDto } from './UpdateArtist.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-guard';
 
 @ApiTags('Artist')
+@UseGuards(JwtAuthGuard)
 @Controller('artist')
 export class ArtistController {
   constructor(

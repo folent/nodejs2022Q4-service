@@ -1,5 +1,5 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Req, Res, UseInterceptors } from '@nestjs/common';
-import { isUUID, UUIDVersion } from 'class-validator';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { isUUID } from 'class-validator';
 import { TrackService } from './track.service';
 import { v4 } from 'uuid'
 import { Response } from 'express';
@@ -8,8 +8,10 @@ import { Track } from 'src/track/Track.entity';
 import { FavoritesService } from 'src/favorites/favorites.service';
 import { ApiBadRequestResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTrackDto } from './CreateTrack.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-guard';
 
 @ApiTags('Track')
+@UseGuards(JwtAuthGuard)
 @Controller('track')
 export class TrackController {
   constructor(

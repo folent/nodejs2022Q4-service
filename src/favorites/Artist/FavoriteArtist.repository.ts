@@ -19,7 +19,7 @@ export class FavoriteArtistRepository {
 
     return this.favoriteArtistRepository.findOne({ 
     where: {
-        id
+        artistId: id
     } 
     })
   }
@@ -28,8 +28,9 @@ export class FavoriteArtistRepository {
     await this.favoriteArtistRepository.insert(favoriteArtist)
   }
 
-  async delete(favoriteArtist: FavoriteArtist): Promise<void> {
-
-    await this.favoriteArtistRepository.delete(favoriteArtist.id)
+  async delete(id: string): Promise<void> {
+    await this.favoriteArtistRepository.delete({
+      artistId: id
+    })
   }
 }

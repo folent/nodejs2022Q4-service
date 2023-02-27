@@ -17,8 +17,12 @@ export class User {
     @Column({
       default: 1
     })
-    // @Generated('increment')
     version: number; // integer number, increments on update
+
+    @Column({
+        nullable: true
+    })
+    refreshToken: string
 
     @Column({
       nullable: true,

@@ -17,7 +17,9 @@ services:
       ports:
         - ${POSTGRES_PORT}:${POSTGRES_PORT}
       networks:
-      - home
+        - home
+      volumes:
+        - pgdata:/var/lib/postgresql/data
     backend:
       container_name: backend-nest
       image: folent/nodejs2022q4-service-nest
@@ -34,8 +36,18 @@ services:
         - POSTGRES_USER=${POSTGRES_USER}
         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         - POSTGRES_DB=${POSTGRES_DB}
+        - CRYPT_SALT=${CRYPT_SALT}
+        - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+        - JWT_SECRET_REFRESH_KEY=${JWT_SECRET_REFRESH_KEY}
+        - TOKEN_EXPIRE_TIME=${TOKEN_EXPIRE_TIME}
+        - TOKEN_REFRESH_EXPIRE_TIME=${TOKEN_REFRESH_EXPIRE_TIME}
+        - MAX_LOG_LEVEL=${MAX_LOG_LEVEL}
+        - MAX_LOG_FILE_IN_KB=${MAX_LOG_FILE_IN_KB}
       networks:
       - home
 
 networks:
   home:
+
+volumes:
+  pgdata:

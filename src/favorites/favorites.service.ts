@@ -9,6 +9,7 @@ import { FavoriteArtistRepository } from './Artist/FavoriteArtist.repository';
 import { FavoriteTrack } from './Track/FavoriteTrack.entity';
 import { FavoriteAlbum } from './Album/FavoriteAlbum.entity';
 import { FavoriteArtist } from './Artist/FavoriteArtist.entity';
+import { Album } from 'src/album/Album.entity';
 
 @Injectable()
 export class FavoritesService {
@@ -29,16 +30,16 @@ export class FavoritesService {
     }
     const artists = await this.favoriteArtistRepository.getFavorites();
     const albums = await this.favoriteAlbumRepository.getFavorites();
-    const tracks = await this.favoriteTracksRepository.getFavorites();
-    
+    const tracks = await this.favoriteTracksRepository.getFavorites();    
+
     const artistsPromises = artists.map(
-      artist => this.artistService.getArtist(artist.id)
+      artist => this.artistService.getArtist(artist.artistId)
     )
     const albumsPromises = albums.map(
-      album => this.albumService.getAlbum(album.id)
+      album => this.albumService.getAlbum(album.albumId)
     )
     const tracksPromises = tracks.map(
-      track => this.trackService.getTrack(track.id)
+      track => this.trackService.getTrack(track.trackId)
     )
     response.artists = await Promise.all(artistsPromises)
     response.albums = await Promise.all(albumsPromises)
@@ -52,15 +53,13 @@ export class FavoritesService {
   }
   async addTrack(id: string): Promise<void> {
     const track = new FavoriteTrack();
-    track.id = id;
+    track.trackId = id;
 
     await this.favoriteTracksRepository.add(track)
   }
   async deleteTrack(id: string): Promise<string> {
-    const track = new FavoriteTrack();
-    track.id = id;
 
-    await this.favoriteTracksRepository.delete(track);
+    await this.favoriteTracksRepository.delete(id);
 
     return Promise.resolve(id)
   }
@@ -69,19 +68,17 @@ export class FavoritesService {
 
     return Promise.resolve(album)
   }
-  async addAlbum(id: string): Promise<string> {
-    const album = new FavoriteAlbum();
-    album.id = id;
+  async addAlbum(album: Album): Promise<string> {
+    const newAlbum = new FavoriteAlbum();
+    newAlbum.albumId = album.id;
 
-    await this.favoriteAlbumRepository.add(album);
+    await this.favoriteAlbumRepository.add(newAlbum);
 
-    return Promise.resolve(id)
+    return Promise.resolve(album.id)
   }
   async deleteAlbum(id: string): Promise<string> {
-    const album = new FavoriteAlbum();
-    album.id = id;
 
-    await this.favoriteAlbumRepository.delete(album)
+    await this.favoriteAlbumRepository.delete(id)
     
     return Promise.resolve(id)
   }
@@ -92,17 +89,14 @@ export class FavoritesService {
   }
   async addArtist(id: string): Promise<string> {
     const artist = new FavoriteArtist();
-    artist.id = id;
+    artist.artistId = id;
 
     await this.favoriteArtistRepository.add(artist)
 
     return Promise.resolve(id)
   }
   async deleteArtist(id: string): Promise<string> {
-    const artist = new FavoriteArtist();
-    artist.id = id;
-    
-    await this.favoriteArtistRepository.delete(artist);
+    await this.favoriteArtistRepository.delete(id);
 
     return Promise.resolve(id)
   }
