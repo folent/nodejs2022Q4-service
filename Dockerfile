@@ -9,5 +9,5 @@ WORKDIR /app
 COPY --from=builder /app ./
 
 EXPOSE ${PORT}
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start:dev"]
 
