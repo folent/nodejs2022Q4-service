@@ -1,5 +1,5 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Req, Res, UseInterceptors } from '@nestjs/common';
-import { isUUID } from 'class-validator';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { isUUID, UUIDVersion } from 'class-validator';
 import { User } from 'src/user/User.entity';
 import { UserService } from './user.service';
 import { v4 } from 'uuid'
@@ -8,8 +8,10 @@ import { StatusCodes } from 'http-status-codes';
 import { ApiBadRequestResponse, ApiForbiddenResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './CreateUser.dto';
 import { UpdatePasswordDto } from './UpdatePassword.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-guard';
 
 @ApiTags('user')
+@UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -25,11 +27,11 @@ export class UserController {
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiNotFoundResponse({ description: 'User is not found' })
   @UseInterceptors(ClassSerializerInterceptor)
-  async getUser(@Param('id', ParseUUIDPipe) id: string): Promise<CreateUserDto> {
+  async getUser(@Param('id') id: UUIDVersion): Promise<CreateUserDto> {
     if (!isUUID(id)) {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST)
     }
-    const user = await this.userService.getUser(id);
+    const user = await this.userService.getUser(id.toString());
 
     if (!user) {
       throw new HttpException('user doesn`t exists', HttpStatus.NOT_FOUND)

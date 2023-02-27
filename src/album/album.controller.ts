@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { isUUID, UUIDVersion } from 'class-validator';
 import { v4 } from 'uuid'
 import { Response } from 'express';
@@ -8,8 +8,10 @@ import { Album } from 'src/album/Album.entity';
 import { ApiBadRequestResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FavoritesService } from 'src/favorites/favorites.service';
 import { UpdateAlbumDto } from './UpdateAlbum.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-guard';
 
 @ApiTags('Album')
+@UseGuards(JwtAuthGuard) 
 @Controller('album')
 export class AlbumController {
   constructor(
@@ -68,11 +70,8 @@ export class AlbumController {
     if (!isUUID(id)) {
       throw new HttpException('id is not validate', HttpStatus.BAD_REQUEST);
     }
-    console.log(id, body);
     
     const album = await this.albumService.getAlbum(id);
-    console.log('album', album);
-    
 
     if (!album) {
       throw new HttpException('Artist doesn`t exists', HttpStatus.NOT_FOUND);
