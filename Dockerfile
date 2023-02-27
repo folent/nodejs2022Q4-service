@@ -1,6 +1,9 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY /*.json ./
+
+RUN npm install
+
 COPY . .
 RUN npm run build
 
@@ -9,5 +12,5 @@ WORKDIR /app
 COPY --from=builder /app ./
 
 EXPOSE ${PORT}
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:prod"]
 
